@@ -19,7 +19,7 @@ namespace Grafy
 
         public void IdzDalej()
         {
-            foreach (Krawedz<T> k in ObecnaPozycja.)
+            //foreach (Krawedz<T> k in ObecnaPozycja.)
         }
     }
 

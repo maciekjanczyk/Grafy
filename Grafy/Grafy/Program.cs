@@ -279,32 +279,49 @@ namespace Grafy
             }
         }
 
-        static void podzbiory(int n, int k, List<int> tab)
+        static void PodzbioryMain(string[] args = null)
         {
-            if (k > 0)
-                for (--k; n > 0; podzbiory(--n, k, tab))
-                    tab[k] = n;
-            else
+            List<int> zbior = new List<int>(5);
+            for (int i = 0; i < 5; i++)
+                zbior.Add(i + 1);            
+            List<List<int>> pdzb = AlgorytmPlecakowy.WszystkiePodzbiory(zbior, 3);
+
+            foreach (List<int> l in pdzb)
             {
-                for (int i = 0; i < k; i++)
-                    Console.Write("{0} ", tab[i]);
+                foreach (int el in l)
+                {
+                    Console.Write("{0} ", el);
+                }
                 Console.WriteLine();
             }
         }
 
-        static void PodzbioryMain(string[] args = null)
+        static void PlecakMain(string[] args = null)
         {
-            List<int> zbior = new List<int>(3);
-            for (int i = 0; i < 3; i++)
-                zbior.Add(i + 1);
-            //Drzewo d = AlgorytmPlecakowy.BudujDrzewo<int>(zbior, 4, 2);
-            //List<List<int>> pdzb = AlgorytmPlecakowy.WszystkiePodzbiory(zbior, 3, 2);
-            podzbiory(3, 2, zbior);
+            Przedmiot spodnie = new Przedmiot { Nazwa = "Spodnie", Waga = 14, Wartosc = 20 };
+            Przedmiot koszula = new Przedmiot { Nazwa = "Koszula", Waga = 8, Wartosc = 5 };
+            Przedmiot bielizna = new Przedmiot { Nazwa = "Bielizna", Waga = 3, Wartosc = 7 };
+            Przedmiot skarpetki = new Przedmiot { Nazwa = "Skarpy", Waga = 2, Wartosc = 1 };
+            Przedmiot kurtka = new Przedmiot { Nazwa = "Kurtka", Waga = 10, Wartosc = 14 };
+
+            List<Przedmiot> lista = new List<Przedmiot>();
+            lista.Add(spodnie);
+            lista.Add(koszula);
+            lista.Add(bielizna);
+            lista.Add(skarpetki);
+            lista.Add(kurtka);
+
+            List<Przedmiot> plecak = AlgorytmPlecakowy.Run(lista, 25);
+            Console.WriteLine("Plecak o wytrzymalosci 25:");
+            foreach (Przedmiot p in plecak)
+            {
+                Console.WriteLine("Nazwa: {0}, Waga: {1}, Wartosc: {2}", p.Nazwa, p.Waga, p.Wartosc);
+            }
         }
 
         public static void Main(string[] args)
         {
-            PodzbioryMain();
+            PlecakMain();
             Console.WriteLine("OK");
             Console.ReadKey();
         }

@@ -6,125 +6,118 @@ using System.Text;
 namespace Grafy
 {
     //- wszystkie podzbiory zbioru n-elementowego
-    //- algorytm plecakowy
+    //- algorytm plecakowy    
 
-    public class Drzewo
+    public class Przedmiot
     {
-        public Drzewo p;
-        public Drzewo l;
-        public int wart;
-        public int n;
-        public int k;
-
-        public Drzewo(int n, int k, int wart = default(int))
-        {
-            this.n = n;
-            this.k = k;
-            p = null;
-            l = null;
-            this.wart = wart;
-        }
+        public string Nazwa { get; set; }
+        public int Wartosc { get; set; }
+        public int Waga { get; set; }
     }
 
     public static class AlgorytmPlecakowy
-    {
+    {        
+        private static void Podzbior<T>(List<T> A, int k, int start, int currLen, bool[] used, List<List<T>> ret)
+        {
+            if (currLen == k)
+            {
+                List<T> malaLista = new List<T>();
 
+                for (int i = 0; i < A.Count; i++)
+                {
+                    if (used[i] == true)
+                    {
+                        malaLista.Add(A[i]);
+                    }
+                }
 
-        public static List<List<T>> WszystkiePodzbiory<T>(List<T> v, int n, int k)
+                ret.Add(malaLista);
+
+                return;
+            }
+
+            if (start == A.Count)
+            {
+                return;
+            }
+
+            used[start] = true;
+            Podzbior(A, k, start + 1, currLen + 1, used, ret);
+
+            used[start] = false;
+            Podzbior(A, k, start + 1, currLen, used, ret);
+        }
+
+        public static List<List<T>> WszystkiePodzbiory<T>(List<T> v, int k)
         {
             List<List<T>> ret = new List<List<T>>();
-
-            Drzewo d = BudujDrzewo(v, n, k);
-            List<List<int>> r2 = new List<List<int>>();
-            AnalizujDrzewo(d, r2, new List<int>(), n, false);
-            foreach (List<int> l in r2)
-            {
-                foreach (int lb in l)
-                    Console.Write("{0} ", lb);
-                Console.WriteLine();
-            }
+            bool[] used = new bool[v.Count];
+            Podzbior(v, k, 0, 0, used, ret);
 
             return ret;
-        }
-
-        public static Drzewo BudujDrzewo<T>(List<T> v, int n, int k)
+        }       
+        
+        public static List<Przedmiot> Run(List<Przedmiot> przedmioty, int wielkosc)
         {
-            Drzewo ret = new Drzewo(n, k, -1);
-            Stack<Drzewo> wezly = new Stack<Drzewo>();
+            List<Przedmiot> ret = null;
+            List<List<Przedmiot>> wszystkiePodzbiory = new List<List<Przedmiot>>();
 
-            wezly.Push(ret);
-
-            while (wezly.Count > 0)
+            for (int i = 1; i <= przedmioty.Count; i++)
             {
-                Drzewo w = wezly.Peek();
-                int current_n = w.n;
-                int current_k = w.k;
+                List<List<Przedmiot>> podzbior = WszystkiePodzbiory(przedmioty, i);
 
-                if (w.n == 0)
+                foreach (List<Przedmiot> l in podzbior)
                 {
-                    wezly.Pop();
+                    wszystkiePodzbiory.Add(l);
                 }
-                else if (w.l != null && w.p != null)
+            }
+
+            int najwyzszaWaga = -1;
+            int najwyzszaWartosc = -1;
+            int najwyzszaIlosc = -1;
+
+            foreach (List<Przedmiot> podzbior in wszystkiePodzbiory)
+            {
+                int obecnaWaga = 0;
+                int obecnaWartosc = 0;
+                int obecnaIlosc = podzbior.Count;
+
+                foreach (Przedmiot przedmiot in podzbior)
                 {
-                    wezly.Pop();
+                    obecnaWaga += przedmiot.Waga;
+                    obecnaWartosc += przedmiot.Wartosc;
                 }
-                else if (w.l == null)
+
+                if (obecnaWaga <= wielkosc && obecnaWaga >= najwyzszaWaga)
                 {
-                    if (current_k < current_n)
+                    if (obecnaWaga != najwyzszaWaga)
                     {
-                        w.l = new Drzewo(current_n - 1, current_k, 1);
+                        ret = podzbior;
+                        najwyzszaWaga = obecnaWaga;
+                        najwyzszaIlosc = obecnaIlosc;
                     }
                     else
                     {
-                        w.l = new Drzewo(current_n - 1, current_k, 0);
+                        if (obecnaWartosc > najwyzszaWartosc)
+                        {
+                            ret = podzbior;
+                            najwyzszaWaga = obecnaWaga;
+                            najwyzszaIlosc = obecnaIlosc;
+                        }
+                        else if (obecnaWartosc == najwyzszaWartosc)
+                        {
+                            if (obecnaIlosc > najwyzszaIlosc)
+                            {
+                                ret = podzbior;
+                                najwyzszaWaga = obecnaWaga;
+                                najwyzszaIlosc = obecnaIlosc;
+                            }
+                        }
                     }
-                    wezly.Push(w.l);
-                    Console.WriteLine("{0} {1} {2} L", w.l.wart, w.l.n, w.l.k);
                 }
-                else if (w.p == null)
-                {
-                    if (current_k > 0)
-                    {
-                        w.p = new Drzewo(current_n - 1, current_k - 1, 1);
-                    }
-                    else
-                    {
-                        w.p = new Drzewo(current_n - 1, current_k - 1, 0);
-                    }
-                    wezly.Push(w.p);
-                    Console.WriteLine("{0} {1} {2} P", w.p.wart, w.p.n, w.p.k);
-                }
-            }            
+            }
 
             return ret;
-        }
-
-        public static void AnalizujDrzewo(Drzewo root, List<List<int>> rootList, List<int> currentList, int k, bool notfirst)
-        {
-            if (notfirst)
-            {
-                currentList.Add(root.wart);
-
-                if (root.l == null && root.p == null)
-                {
-                    rootList.Add(currentList);
-                    return;
-                }
-            }
-
-            List<int> currentListCpy = new List<int>();
-            currentList.ForEach(new Action<int>(e => currentListCpy.Add(e)));
-            if (root.l != null)
-            {
-                AnalizujDrzewo(root.l, rootList, currentList, k, true);
-            }
-
-            if (root.p != null)
-            {
-                List<int> newList = new List<int>();
-                currentListCpy.ForEach(new Action<int>(e => newList.Add(e)));
-                AnalizujDrzewo(root.p, rootList, newList, k, true);
-            }
-        }
+        } 
     }
 }
