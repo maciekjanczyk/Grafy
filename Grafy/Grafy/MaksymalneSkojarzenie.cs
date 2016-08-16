@@ -97,6 +97,54 @@ namespace Grafy
             return ret;
         }
 
+        private static List<int[]> DrogaNaParyPunktow(List<int> droga)
+        {
+            List<int[]> ret = new List<int[]>();
+
+            for (int i = 1; i < droga.Count; i++)
+            {
+                int[] pkt = new int[2];
+                if (i % 2 == 1)
+                {
+                    pkt[0] = droga[i - 1];
+                    pkt[1] = droga[i];
+                }
+                else
+                {
+                    pkt[1] = droga[i - 1];
+                    pkt[0] = droga[i];
+                }
+                ret.Add(pkt);
+            }
+
+            return ret;
+        }
+
+        public static int[,] Znajdz(int[,] graf)
+        {
+            int LENGTH = (int)Math.Sqrt((double)graf.Length);
+            int[,] ret = (int[,])graf.Clone();            
+
+            while (true)
+            {
+                List<int> dp = ZnajdzDrogePowiekszajaca(ret);
+                if (dp.Count == 0)
+                    break;
+
+                List<int[]> punkty = DrogaNaParyPunktow(dp);
+
+                foreach (int[] pkt in punkty)
+                {
+                    if (ret[pkt[0], pkt[1] - LENGTH] == 1)
+                        ret[pkt[0], pkt[1] - LENGTH] = 2;
+                    else if (ret[pkt[0], pkt[1] - LENGTH] == 2)
+                        ret[pkt[0], pkt[1] - LENGTH] = 1;
+                }
+            }
+
+            return ret;
+        }
+
 		public static List<Wezel<T>> ZnajdzDrogeRozszerzajaca<T>(List<Wezel<T>> V1, List<Wezel<T>> V2, List<Krawedz<T>> E)
 		{
 			List<Wezel<T>> V1prim = new List<Wezel<T>> ();

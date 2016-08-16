@@ -329,9 +329,22 @@ namespace Grafy
             }
         }
 
+        static void MaksSkojrzMain(string[] args = null)
+        {
+            int[,] mat = { { 0, 0, 1, 0 }, { 1, 2, 0, 1 }, { 0, 1, 2, 0 }, { 0, 0, 1, 2 } };
+            int[,] msk = MaksymalneSkojarzenie.Znajdz(mat);
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                    Console.Write("{0} ", msk[i, j]);
+                Console.WriteLine();
+            }
+        }
+
         public static void Main(string[] args)
         {
-            drogPowMain();
+            MaksSkojrzMain();
             Console.WriteLine("OK");
             Console.ReadKey();
         }
