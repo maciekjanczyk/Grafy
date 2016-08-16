@@ -319,9 +319,19 @@ namespace Grafy
             }
         }
 
+        static void drogPowMain(string[] args = null)
+        {
+            int[,] mat = { { 0, 0, 1, 0 }, { 1, 2, 0, 1 }, { 0, 1, 2, 0 }, { 0, 0, 1, 2 } };
+            List<int> ret = MaksymalneSkojarzenie.ZnajdzDrogePowiekszajaca(mat);
+            foreach (int r in ret)
+            {
+                Console.WriteLine("{0}", r);
+            }
+        }
+
         public static void Main(string[] args)
         {
-            PlecakMain();
+            drogPowMain();
             Console.WriteLine("OK");
             Console.ReadKey();
         }
