@@ -5,6 +5,103 @@ namespace Grafy
 {
 	public class AlgorytmWegierski
 	{
+        private static void NajmWartWiersz(int[,] graf, List<int[]> ret)
+        {
+            int LEN = graf.GetLength(0);
+
+            for (int i = 0; i < LEN; i++)
+            {
+                int[] pkt = new int[2];
+                int wart = -1;
+
+                for (int j = 0; j < LEN; j++)
+                {
+                    if (graf[i, j] < wart)
+                    {
+                        pkt[0] = i;
+                        pkt[1] = j;
+                        wart = graf[i, j];
+                    }
+                }
+
+                ret.Add(pkt);
+            }
+        }
+
+        private static void OdejmijNajmniejsze(int[,] graf, List<int[]> najm)
+        {
+            int LEN = graf.GetLength(0);
+
+            foreach (int[] pkt in najm)
+            {
+                int wiersz = pkt[0];
+                int wart = graf[pkt[0], pkt[1]];
+
+                for (int i = 0; i < LEN; i++)
+                    graf[wiersz, i] -= wart;
+            }
+        }
+
+        private static void NaprawZeraWKolumnach(int[,] graf)
+        {
+            int LEN = graf.GetLength(0);
+            List<int> kolumnyBezZer = new List<int>();
+
+            for (int i = 0; i < LEN; i++)
+            {
+                int ileLiczb = 0;
+                for (int j = 0; j < LEN; j++)
+                {
+                    if (graf[j, i] == 0)
+                        break;
+                    else
+                        ileLiczb++;
+                }
+
+                if (ileLiczb == LEN)
+                    kolumnyBezZer.Add(i);
+            }
+
+            foreach (int i in kolumnyBezZer)
+            {
+                int najm = Int32.MaxValue;
+                for (int j = 0; j < LEN; j++)
+                    if (graf[j, i] < najm)
+                        najm = graf[j, i];
+                for (int j = 0; j < LEN; j++)
+                    graf[j, i] -= najm;
+            }
+        }
+
+        private static int[,] Skreslaj(int[,] graf, out int liczba)
+        {
+            int[,] ret = new int[graf.GetLength(0), graf.GetLength(1)];
+            liczba = 0;
+
+            return ret;
+        }
+
+        public static int[,] Znajdz(int[,] graf)
+        {
+            if (graf.GetLength(0) != graf.GetLength(1))
+                throw new Exception("Argument musi byc macierza kwadratowa!");
+
+            int[,] _clone = (int[,])graf.Clone();
+            int LENGTH = graf.GetLength(0);
+            int SKRESLENIA = 0;
+
+            while (SKRESLENIA != LENGTH)
+            {
+                List<int[]> najmWiersz = new List<int[]>();
+                NajmWartWiersz(_clone, najmWiersz);
+                OdejmijNajmniejsze(_clone, najmWiersz);
+                NaprawZeraWKolumnach(_clone);
+
+            }
+
+            return _clone;
+        }
+
 		public static List<List<Wezel<T>>> OddzielZbiory<T>(Graf<T> graf, bool pierwszyWiekszy = true)
 		{
 			List<List<Wezel<T>>> ret = new List<List<Wezel<T>>> ();
