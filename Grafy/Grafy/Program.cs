@@ -345,7 +345,10 @@ namespace Grafy
         static void WegierMain(string[] args = null)
         {
             int[,] mat = { { 14, 5, 8, 7 }, { 2, 12, 6, 5 }, { 7, 8, 3, 9 }, { 2, 4, 6, 10 } };
-            AlgorytmWegierski.Znajdz(mat);
+            List<int> rozw = AlgorytmWegierski.Znajdz(mat);
+            foreach (int l in rozw)
+                Console.Write("{0} ", l);
+            Console.WriteLine();
         }
 
         public static void Main(string[] args)

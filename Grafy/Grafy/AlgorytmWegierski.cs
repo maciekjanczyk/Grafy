@@ -169,28 +169,147 @@ namespace Grafy
             return ret;
         }
 
-        public static int[,] Znajdz(int[,] graf)
+        private static void NajmNieskreslony(int[,] graf, int[,] skreslenia)
+        {
+            int LEN = graf.GetLength(0);
+            int najm = Int32.MaxValue;
+
+            // szukamy najmniejszego
+            for (int i = 0; i < LEN; i++)
+            {
+                for (int j = 0; j < LEN; j++)
+                    if (skreslenia[i, j] == 0 && graf[i, j] < najm)
+                        najm = graf[i, j];
+            }
+
+            // odejmujemy od nieskreslonych i dodajemy do podwojnie skreslonych
+            for (int i = 0; i < LEN; i++)
+            {
+                for (int j = 0; j < LEN; j++)
+                    if (skreslenia[i, j] == 0)
+                        graf[i, j] -= najm;
+                    else if (skreslenia[i, j] == 2)
+                        graf[i, j] += najm;
+            }
+        }
+
+        private static List<int[]> SamotneZera(int[,] graf)
+        {
+            int LEN = graf.GetLength(0);
+            List<int[]> ret = new List<int[]>();
+            List<int[]> zera = new List<int[]>();
+            List<int> odhaczoneWiersze = new List<int>();
+
+            // kolekcja zer
+            for (int i = 0; i < LEN; i++)
+            {
+                for (int j = 0; j < LEN; j++)
+                {
+                    if (graf[i, j] == 0)
+                        zera.Add(new int[] { i, j });
+                }
+            }
+
+            // samotne w wierszu i kolumnie
+            foreach (int[] pkt in zera)
+            {
+                int czySamotne = 0;
+
+                for (int i = 0; i < LEN; i++)
+                {
+                    for (int j = 0; j < LEN; j++)
+                    {
+                        if (i == pkt[0] && j == pkt[1])
+                            continue;
+                        if (graf[i, j] == 0)
+                        {
+                            czySamotne++;
+                            break;
+                        }
+                    }
+                }
+
+                if (czySamotne == 0)
+                {
+                    ret.Add(pkt);
+                    odhaczoneWiersze.Add(pkt[0]);
+                }
+            }
+
+            foreach (int[] pkt in ret)
+                if (zera.Contains(pkt))
+                    zera.Remove(pkt);
+
+            // samotne w wierszu
+            foreach (int[] pkt in zera)
+            {
+                int czySamotne = 0;
+
+                for (int i = 0; i < LEN; i++)
+                {
+                    if (i == pkt[1])
+                        continue;
+                    if (graf[pkt[0], i] == 0)
+                    {
+                        czySamotne++;
+                        break;
+                    }
+                }
+
+                if (czySamotne == 0)
+                {
+                    ret.Add(pkt);
+                    odhaczoneWiersze.Add(pkt[0]);
+                }
+            }
+
+            foreach (int[] pkt in ret)
+                if (zera.Contains(pkt))
+                    zera.Remove(pkt);
+
+            // pierwszy lepszy w wierszu
+            foreach (int[] pkt in zera)
+            {
+                if (odhaczoneWiersze.Contains(pkt[0]))
+                    continue;
+
+                ret.Add(pkt);
+                odhaczoneWiersze.Add(pkt[0]);
+            }
+
+            return ret;
+        }
+
+        public static List<int> Znajdz(int[,] graf)
         {
             if (graf.GetLength(0) != graf.GetLength(1))
                 throw new Exception("Argument musi byc macierza kwadratowa!");
 
             int[,] _clone = (int[,])graf.Clone();
             int LENGTH = graf.GetLength(0);
-            int SKRESLENIA = 0;
+            List<int> ret = new List<int>();
 
-            while (SKRESLENIA != LENGTH)
+            List<int[]> najmWiersz = new List<int[]>();
+            NajmWartWiersz(_clone, najmWiersz);
+            OdejmijNajmniejsze(_clone, najmWiersz);
+            NaprawZeraWKolumnach(_clone);
+            int iloscSkreslen = 0;
+            int[,] mskreslen = new int[LENGTH, LENGTH];
+            Skreslaj(_clone, out iloscSkreslen, out mskreslen);   
+            
+            while (iloscSkreslen != LENGTH)
             {
-                List<int[]> najmWiersz = new List<int[]>();
-                NajmWartWiersz(_clone, najmWiersz);
-                OdejmijNajmniejsze(_clone, najmWiersz);
-                NaprawZeraWKolumnach(_clone);
-                int iloscSkreslen = 0;
-                int[,] mskreslen = new int[LENGTH, LENGTH];
+                NajmNieskreslony(_clone, mskreslen);
                 Skreslaj(_clone, out iloscSkreslen, out mskreslen);
-                //if (iloscSkreslen == LENGTH)
             }
 
-            return _clone;
+            List<int[]> samZer = SamotneZera(_clone);  
+            foreach (int[] pkt in samZer)
+            {
+                ret.Add(graf[pkt[0], pkt[1]]);
+            }
+
+            return ret;
         }
 
 		public static List<List<Wezel<T>>> OddzielZbiory<T>(Graf<T> graf, bool pierwszyWiekszy = true)
