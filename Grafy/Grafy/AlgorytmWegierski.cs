@@ -12,7 +12,7 @@ namespace Grafy
             for (int i = 0; i < LEN; i++)
             {
                 int[] pkt = new int[2];
-                int wart = -1;
+                int wart = Int32.MaxValue;
 
                 for (int j = 0; j < LEN; j++)
                 {
@@ -73,10 +73,98 @@ namespace Grafy
             }
         }
 
-        private static int[,] Skreslaj(int[,] graf, out int liczba)
+        private static int[,] Skreslaj(int[,] graf, out int liczba, out int[,] mskreslen)
         {
             int[,] ret = new int[graf.GetLength(0), graf.GetLength(1)];
+            int LEN = graf.GetLength(0);
+
             liczba = 0;
+
+            List<int[]> wz = new List<int[]>(); // przechowuje numer wiersza/kolumny i ile zer w nim
+
+            for (int i = 0; i < LEN; i++)
+            {
+                int ileZerW = 0;
+                int ileZerK = 0;
+
+                for (int j = 0; j < LEN; j++)
+                {
+                    if (graf[i, j] == 0)
+                        ileZerW++;
+                    if (graf[j, i] == 0)
+                        ileZerK++;
+                }
+
+                if (ileZerW > 0)
+                {
+                    wz.Add(new int[] { i, ileZerW, 0 }); // 0 - wiersz
+                }
+
+                if (ileZerK > 0)
+                {
+                    wz.Add(new int[] { i, ileZerK, 1 }); // 1 - kolumna
+                }
+            }
+
+            int ILE_W_MACIERZY = 0;
+
+            for (int i = 0; i < LEN; i++)
+                for (int j = 0; j < LEN; j++)
+                    if (graf[i, j] == 0)
+                        ILE_W_MACIERZY++;
+
+            wz.Sort(new Comparison<int[]>((a1, a2) => { return a1[1] > a2[1] ? -1 : 1; } ));
+            List<int> skresloneWiersze = new List<int>();
+            List<int> skresloneKolumny = new List<int>();
+            int[,] macierzSkreslen = new int[LEN, LEN];
+
+            foreach (int[] pkt in wz)
+            {
+                if (pkt[2] == 0)
+                {
+                    int ileDa = 0;
+                    for (int i = 0; i < LEN; i++)
+                    {
+                        if (graf[pkt[0], i] == 0 && macierzSkreslen[pkt[0], i] == 0)
+                            ileDa++;
+                    }
+                    if (ileDa == 0)
+                        continue;
+
+                    for (int i = 0; i < LEN; i++)
+                    {
+                        macierzSkreslen[pkt[0], i] += 1;
+                        if (graf[pkt[0], i] == 0 && macierzSkreslen[pkt[0], i] == 1)
+                            ILE_W_MACIERZY--;
+                    }
+                    skresloneWiersze.Add(pkt[0]);                    
+                }
+                else
+                {
+                    int ileDa = 0;
+                    for (int i = 0; i < LEN; i++)
+                    {
+                        if (graf[i, pkt[0]] == 0 && macierzSkreslen[i, pkt[0]] == 0)
+                            ileDa++;
+                    }
+                    if (ileDa == 0)
+                        continue;
+
+                    for (int i = 0; i < LEN; i++)
+                    {
+                        macierzSkreslen[i, pkt[0]] += 1;
+                        if (graf[i, pkt[0]] == 0 && macierzSkreslen[i, pkt[0]] == 1)
+                            ILE_W_MACIERZY--;
+                    }
+                    skresloneKolumny.Add(pkt[0]);   
+                }
+
+                if (ILE_W_MACIERZY <= 0)
+                    break;
+            }
+
+            liczba = skresloneWiersze.Count + skresloneKolumny.Count;
+            mskreslen = macierzSkreslen;
 
             return ret;
         }
@@ -96,7 +184,10 @@ namespace Grafy
                 NajmWartWiersz(_clone, najmWiersz);
                 OdejmijNajmniejsze(_clone, najmWiersz);
                 NaprawZeraWKolumnach(_clone);
-
+                int iloscSkreslen = 0;
+                int[,] mskreslen = new int[LENGTH, LENGTH];
+                Skreslaj(_clone, out iloscSkreslen, out mskreslen);
+                //if (iloscSkreslen == LENGTH)
             }
 
             return _clone;

@@ -342,9 +342,15 @@ namespace Grafy
             }
         }
 
+        static void WegierMain(string[] args = null)
+        {
+            int[,] mat = { { 14, 5, 8, 7 }, { 2, 12, 6, 5 }, { 7, 8, 3, 9 }, { 2, 4, 6, 10 } };
+            AlgorytmWegierski.Znajdz(mat);
+        }
+
         public static void Main(string[] args)
         {
-            MaksSkojrzMain();
+            WegierMain();
             Console.WriteLine("OK");
             Console.ReadKey();
         }
