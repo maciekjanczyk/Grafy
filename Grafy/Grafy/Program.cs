@@ -346,9 +346,16 @@ namespace Grafy
         {
             int[,] mat = { { 14, 5, 8, 7 }, { 2, 12, 6, 5 }, { 7, 8, 3, 9 }, { 2, 4, 6, 10 } };
             List<int> rozw = AlgorytmWegierski.Znajdz(mat);
-            foreach (int l in rozw)
-                Console.Write("{0} ", l);
-            Console.WriteLine();
+            int sum = 0;
+            for (int i = 0; i < rozw.Count; i++)
+            {
+                int l = rozw[i];
+                sum += l;
+                if (i != rozw.Count - 1)
+                    Console.Write("{0} + ", l);
+                else
+                    Console.WriteLine("{0} = {1} ", l, sum);
+            }
         }
 
         public static void Main(string[] args)

@@ -199,6 +199,7 @@ namespace Grafy
             List<int[]> ret = new List<int[]>();
             List<int[]> zera = new List<int[]>();
             List<int> odhaczoneWiersze = new List<int>();
+            List<int> odhaczoneKolumny = new List<int>();
 
             // kolekcja zer
             for (int i = 0; i < LEN; i++)
@@ -233,6 +234,7 @@ namespace Grafy
                 {
                     ret.Add(pkt);
                     odhaczoneWiersze.Add(pkt[0]);
+                    odhaczoneKolumny.Add(pkt[1]);
                 }
             }
 
@@ -260,6 +262,7 @@ namespace Grafy
                 {
                     ret.Add(pkt);
                     odhaczoneWiersze.Add(pkt[0]);
+                    odhaczoneKolumny.Add(pkt[1]);
                 }
             }
 
@@ -267,14 +270,15 @@ namespace Grafy
                 if (zera.Contains(pkt))
                     zera.Remove(pkt);
 
-            // pierwszy lepszy w wierszu
+            // reszta
             foreach (int[] pkt in zera)
             {
-                if (odhaczoneWiersze.Contains(pkt[0]))
+                if (odhaczoneWiersze.Contains(pkt[0]) || odhaczoneKolumny.Contains(pkt[1]))
                     continue;
 
                 ret.Add(pkt);
                 odhaczoneWiersze.Add(pkt[0]);
+                odhaczoneKolumny.Add(pkt[1]);
             }
 
             return ret;
