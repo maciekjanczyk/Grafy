@@ -269,12 +269,15 @@ namespace Grafy
 
             Console.WriteLine("\nRozwiazanie:");
             int[,] sudoku = KolorowanieGrafuSudoku.TablicaStringDoSudoku(strs);
-            sudoku = KolorowanieGrafuSudoku.RozwiazSudoku(sudoku);
+            sudoku = KolorowanieGrafuSudoku.RozwiazSudoku3(sudoku);
 
             for (int i = 0; i < 9; i++)
             {
                 for(int j = 0; j < 9; j++)
-                    Console.Write("{0} ", sudoku[i, j]);
+                    if (sudoku[i, j] != -1)
+                        Console.Write("{0} ", sudoku[i, j]);
+                    else
+                        Console.Write("- ");
                 Console.WriteLine();
             }
         }
@@ -360,7 +363,8 @@ namespace Grafy
 
         public static void Main(string[] args)
         {
-            WegierMain();
+            //WegierMain();
+            SudokuMain();
             Console.WriteLine("OK");
             Console.ReadKey();
         }
