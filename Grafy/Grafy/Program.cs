@@ -199,7 +199,7 @@ namespace Grafy
             E.Add(new Krawedz<int>(V[4], V[5], 8));
         }
 
-        static void StaryMain()
+        static void MSTMain()
         {
             List<Wezel<int>> V = new List<Wezel<int>>();
             List<Krawedz<int>> E = new List<Krawedz<int>>();
@@ -230,7 +230,7 @@ namespace Grafy
             mdr.WyswietlKrawedzie(Console.Out);
         }
 
-        static void KomiwojazerMain(string[] args)
+        static void KomiwojazerMain(string[] args = null)
         {
             List<Wezel<int>> V = new List<Wezel<int>>();
             List<Krawedz<int>> E = new List<Krawedz<int>>();
@@ -261,11 +261,31 @@ namespace Grafy
         static void SudokuMain(string[] args = null)
         {
             string[] strs = new string[9];
+            strs[0] = "29--53---";
+            strs[1] = "--58-9---";
+            strs[2] = "6---4----";
+            strs[3] = "3-------6";
+            strs[4] = "-4--96---";
+            strs[5] = "---4-----";
+            strs[6] = "---2-7-94";
+            strs[7] = "48-------";
+            strs[8] = "5--36--78";
+
 
             // wczytujemy sudoku liczby nieoddzielone spacja, puste miejsca to '-'
-            Console.WriteLine("Wpisz proste sudoku:");
+            /*Console.WriteLine("Wpisz proste sudoku:");
             for (int i = 0; i < 9; i++)
-                strs[i] = Console.ReadLine();
+                strs[i] = Console.ReadLine();*/
+
+            Console.WriteLine("Wprowadzone sudoku:");
+            for (int i = 0; i < strs.Length; i++)
+            {
+                for (int j = 0; j < strs[0].Length; j++)
+                {
+                    Console.Write("{0} ", strs[i][j]);
+                }
+                Console.WriteLine();
+            }
 
             Console.WriteLine("\nRozwiazanie:");
             int[,] sudoku = KolorowanieGrafuSudoku.TablicaStringDoSudoku(strs);
@@ -337,6 +357,17 @@ namespace Grafy
             int[,] mat = { { 0, 0, 1, 0 }, { 1, 2, 0, 1 }, { 0, 1, 2, 0 }, { 0, 0, 1, 2 } };
             int[,] msk = MaksymalneSkojarzenie.Znajdz(mat);
 
+            Console.WriteLine("Macierz wejsciowa:");
+            for (int i = 0; i < mat.GetLength(0); i++)
+            {
+                for (int j = 0; j < mat.GetLength(0); j++)
+                {
+                    Console.Write("{0} ", mat[i, j]);
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\nRozwiazanie:");
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
@@ -350,6 +381,17 @@ namespace Grafy
             int[,] mat = { { 14, 5, 8, 7 }, { 2, 12, 6, 5 }, { 7, 8, 3, 9 }, { 2, 4, 6, 10 } };
             List<int> rozw = AlgorytmWegierski.Znajdz(mat);
             int sum = 0;
+            Console.WriteLine("Macierz wejsciowa:");
+            for (int i = 0; i < mat.GetLength(0); i++)
+            {
+                for (int j = 0; j < mat.GetLength(0); j++)             
+                {
+                    Console.Write("{0} ", mat[i, j]);
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\nRozwiazanie:");
             for (int i = 0; i < rozw.Count; i++)
             {
                 int l = rozw[i];
@@ -361,12 +403,71 @@ namespace Grafy
             }
         }
 
+        static void EulerMain(string[] args = null)
+        {
+            List<Wezel<int>> V = new List<Wezel<int>>();
+            List<Krawedz<int>> E = new List<Krawedz<int>>();
+
+            UzupelnijDaneVDlaCykluEulera(V);
+            UzupelnijDaneEDlaCykluEulera(V, E);
+
+            Graf<int> graf = new Graf<int>(V, E);
+            Queue<Wezel<int>> ret = CyklEulera.Run(graf, V[0]);
+            graf.WyswietlWezly(Console.Out);
+            graf.WyswietlKrawedzie(Console.Out);
+            Console.WriteLine("Rozwiazanie:");
+            while (ret.Count > 0)
+            {
+                Wezel<int> w = ret.Dequeue();
+                Console.WriteLine("{0} {1}", w.Nazwa, w.Wart);
+            }
+        }
+
         public static void Main(string[] args)
         {
-            //WegierMain();
-            SudokuMain();
-            Console.WriteLine("OK");
-            Console.ReadKey();
+            Console.WriteLine("Metody optymalizacji - Maciek Janczyk\n---------------------------");
+
+            char k = '-';
+            while (k != '8')
+            {
+                Console.WriteLine("\nMenu:");
+                Console.WriteLine("1. Cykl Eulera");
+                Console.WriteLine("2. Maksymalne skojarzenie");
+                Console.WriteLine("3. Algorytm wegierski");
+                Console.WriteLine("4. Minimalne drzewo rozpinajace");
+                Console.WriteLine("5. Problem komiwojazera");
+                Console.WriteLine("6. Sudoku");
+                Console.WriteLine("7. Algorytm plecakowy");
+                Console.WriteLine("8. Wyjscie");
+                Console.Write("Wybor: ");
+                k = Console.ReadKey().KeyChar;
+                Console.WriteLine();
+
+                switch (k)
+                {
+                    case '3':
+                        WegierMain();
+                        break;
+                    case '5':
+                        KomiwojazerMain();
+                        break;
+                    case '1':
+                        EulerMain();
+                        break;
+                    case '7':
+                        PlecakMain();
+                        break;
+                    case '6':
+                        SudokuMain();
+                        break;
+                    case '2':
+                        MaksSkojrzMain();
+                        break;
+                    case '4':
+                        MSTMain();
+                        break;
+                }
+            }                                    
         }
     }
 }
